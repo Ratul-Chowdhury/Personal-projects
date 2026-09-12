@@ -29,11 +29,11 @@ $room_details = mysqli_fetch_assoc($result);
 mysqli_stmt_close($stmt);
 
 $room_images = [
-    '101' => 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800',
-    '102' => 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800',
-    '201' => 'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800',
-    '202' => 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=800',
-    '301' => 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800'
+    '101' => 'room-101.jpg',
+    '102' => 'room-102.jpg',
+    '201' => 'room-201.jpg',
+    '202' => 'room-202.jpg',
+    '301' => 'room-301.jpg'
 ];
 
 $room_image = $room_images[$room_number] ?? '';
