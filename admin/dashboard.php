@@ -28,7 +28,6 @@ mysqli_stmt_close($stmt);
 <head>
     <title>Dashboard - Grand Hotel</title>
     <link rel="stylesheet" href="../style.css">
-    
 </head>
 <body data-role="<?= $role ?>">
     <div class="support-bar">For Bookings, Support, or Password Recovery, Call: +1-800-555-0199</div>
@@ -50,11 +49,11 @@ mysqli_stmt_close($stmt);
             <?php if ($role === 'admin'): ?>
                 <h2>Admin Dashboard</h2>
                 <div class="dashboard-tabs">
-                    <button class="tab-btn active" onclick="showTab('admin_bookings')">Bookings & Stats</button>
-                    <button class="tab-btn" onclick="showTab('admin_services')">Services Log</button>
-                    <button class="tab-btn" onclick="showTab('admin_damages')">Product Damage</button>
-                    <button class="tab-btn" onclick="showTab('admin_reviews')">Reviews</button>
-                    <button class="tab-btn" onclick="showTab('admin_users')">Users (CRUD)</button>
+                    <button class="tab-btn active" onclick="showTab('admin_bookings', this)">Bookings & Stats</button>
+                    <button class="tab-btn" onclick="showTab('admin_services', this)">Services Log</button>
+                    <button class="tab-btn" onclick="showTab('admin_damages', this)">Product Damage</button>
+                    <button class="tab-btn" onclick="showTab('admin_reviews', this)">Reviews</button>
+                    <button class="tab-btn" onclick="showTab('admin_users', this)">Users (CRUD)</button>
                 </div>
 
                 <div id="admin_bookings" class="tab-content active">
@@ -67,11 +66,13 @@ mysqli_stmt_close($stmt);
 
                 <div id="admin_services" class="tab-content">
                     <h3>Services Provided by Staff (Reception & Room Service)</h3>
+                    <button class="action-btn" style="margin-bottom:10px;" onclick="deleteSelectedRequests()">Delete Selected</button>
                     <div id="requestsTable"></div>
                 </div>
 
                 <div id="admin_damages" class="tab-content">
                     <h3>Product Damage Reports</h3>
+                    <button class="action-btn" style="margin-bottom:10px;" onclick="deleteSelectedDamages()">Delete Selected</button>
                     <div id="damagesTable"></div>
                 </div>
 
@@ -83,15 +84,15 @@ mysqli_stmt_close($stmt);
                 <div id="admin_users" class="tab-content">
                     <h3>Manage Users</h3>
                     <input type="text" id="customerSearch" placeholder="Search by name, email, or username..." onkeyup="searchCustomers()" style="margin-bottom:15px; width:100%; max-width:400px;">
+                    <button class="action-btn" style="margin-bottom:10px;" onclick="deleteSelectedUsers()">Delete Selected</button>
                     <div id="usersTable"></div>
                 </div>
 
             <?php elseif ($role === 'customer'): ?>
                 <h2>Customer Dashboard</h2>
                 <div class="dashboard-tabs">
-                    <button class="tab-btn active" onclick="showTab('cust_book')">My Bookings</button>
-                    <button class="tab-btn" onclick="showTab('cust_req')">Special Requests</button>
-                    <button class="tab-btn" onclick="showTab('cust_rev')">My Reviews</button>
+                    <button class="tab-btn active" onclick="showTab('cust_book', this)">My Bookings</button>
+                    <button class="tab-btn" onclick="showTab('cust_req', this)">Special Requests</button>
                 </div>
 
                 <div id="cust_book" class="tab-content active">
@@ -112,20 +113,15 @@ mysqli_stmt_close($stmt);
                     <div id="requestsTable"></div>
                 </div>
 
-                <div id="cust_rev" class="tab-content">
-                    <h3>My Reviews</h3>
-                    <div id="reviewsTable"></div>
-                </div>
-
             <?php elseif ($role === 'receptionist'): ?>
                 <h2>Receptionist Dashboard</h2>
                 <div class="dashboard-tabs">
-                    <button class="tab-btn active" onclick="showTab('rec_services')">Services</button>
-                    <button class="tab-btn" onclick="showTab('rec_messages')">Messages</button>
-                    <button class="tab-btn" onclick="showTab('rec_requests')">Requests</button>
+                    <button class="tab-btn active" onclick="showTab('rec_services', this)">Services</button>
+                    <button class="tab-btn" onclick="showTab('rec_message', this)">Message</button>
+                    <button class="tab-btn" onclick="showTab('rec_requests', this)">Requests</button>
                 </div>
 
-                <div id="rec_services" class="tab-content active">
+                <div id="rec_services" class="tab-content">
                     <div class="service-grid">
                         <div class="service-card">
                             <h4>Wheelchair Service</h4>
@@ -153,11 +149,30 @@ mysqli_stmt_close($stmt);
                                 <button type="submit">Generate Invoice</button>
                             </form>
                         </div>
+                        <div class="service-card">
+                            <h4>Report Product Damage</h4>
+                            <form onsubmit="reportDamage(event)">
+                                <label>Room Number</label>
+                                <input type="text" name="room_number" placeholder="Room 101" required>
+                                <label>Damaged Item</label>
+                                <input type="text" name="item" placeholder="e.g., TV Remote, Lamp" required>
+                                <label>Description</label>
+                                <textarea name="description" rows="2" placeholder="Describe the damage..." required></textarea>
+                                <button type="submit">Report Damage</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
 
-                <div id="rec_messages" class="tab-content">
-                    <h3>Messages from Room Service</h3>
+                <div id="rec_message" class="tab-content">
+                    <h3>Message The Roomservice</h3>
+                    <form onsubmit="sendMessageToRoomservice(event)" class="service-card" style="max-width:600px;">
+                        <label>Service Instructions</label>
+                        <textarea name="text" rows="4" placeholder="e.g., Room 101 needs breakfast at 8 AM" required></textarea>
+                        <button type="submit">Send to Room Service</button>
+                    </form>
+                    
+                    <h3 style="margin-top:30px;">Messages</h3>
                     <div id="messagesTable"></div>
                 </div>
 
@@ -169,9 +184,9 @@ mysqli_stmt_close($stmt);
             <?php elseif ($role === 'roomservice'): ?>
                 <h2>Room Service Dashboard</h2>
                 <div class="dashboard-tabs">
-                    <button class="tab-btn active" onclick="showTab('rs_services')">Services</button>
-                    <button class="tab-btn" onclick="showTab('rs_message')">Message Receptionist</button>
-                    <button class="tab-btn" onclick="showTab('rs_requests')">Requests</button>
+                    <button class="tab-btn active" onclick="showTab('rs_services', this)">Services</button>
+                    <button class="tab-btn" onclick="showTab('rs_message', this)">Message Receptionist</button>
+                    <button class="tab-btn" onclick="showTab('rs_requests', this)">Requests</button>
                 </div>
 
                 <div id="rs_services" class="tab-content active">
@@ -197,7 +212,7 @@ mysqli_stmt_close($stmt);
 
                 <div id="rs_message" class="tab-content">
                     <h3>Send Message to Receptionist</h3>
-                    <form onsubmit="sendMessage(event, 2)" class="service-card" style="max-width:600px;">
+                    <form onsubmit="sendMessage(event, 0)" class="service-card" style="max-width:600px;">
                         <label>Your Message</label>
                         <textarea name="text" rows="4" required></textarea>
                         <button type="submit">Send Message</button>
@@ -205,13 +220,14 @@ mysqli_stmt_close($stmt);
                 </div>
 
                 <div id="rs_requests" class="tab-content">
-                    <h3>All Service Requests</h3>
+                    <h3>Service Requests from Receptionist</h3>
                     <div id="requestsTable"></div>
                 </div>
             <?php endif; ?>
         </div>
     </div>
 
+    <!-- Review Modal -->
     <div id="reviewModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:1000;">
         <div class="card" style="max-width:500px; width:90%;">
             <h3>Write a Review</h3>
@@ -224,6 +240,30 @@ mysqli_stmt_close($stmt);
                 <textarea id="reviewText" rows="3" required></textarea>
                 <button type="submit" style="margin-top:10px;">Submit Review</button>
                 <button type="button" class="secondary-btn" onclick="closeModal()" style="margin-top:10px; width:auto; padding:10px 20px;">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Damage Charges Modal (For Admin) -->
+    <div id="damageChargesModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:1000;">
+        <div class="card" style="max-width:500px; width:90%;">
+            <h3>Add Extra Charges / Discount</h3>
+            <form onsubmit="updateDamageCharges(event)">
+                <input type="hidden" id="damageId">
+                <input type="hidden" id="bookingId">
+                
+                <label>Room Number</label>
+                <input type="text" id="modalRoomNumber" disabled style="background:#f5f5f5;">
+                
+                <label>Amount (Positive for Charge, Negative for Discount)</label>
+                <input type="number" id="extraCharges" step="0.01" placeholder="e.g. 50 or -50" required>
+                <small style="color:#777; display:block; margin-bottom:15px;">This will be added to the customer's final bill.</small>
+                
+                <label>Reason</label>
+                <textarea id="damageReason" rows="2" placeholder="Product Damage" required></textarea>
+                
+                <button type="submit" style="margin-top:10px;">Apply to Booking</button>
+                <button type="button" class="secondary-btn" onclick="closeDamageChargesModal()" style="margin-top:10px; width:auto; padding:10px 20px;">Cancel</button>
             </form>
         </div>
     </div>

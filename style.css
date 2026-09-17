@@ -530,3 +530,24 @@ tr:hover {
 .badge-roomservice { background: #27ae60; }
 .badge-customer { background: #f39c12; }
 
+/* --- NEW STATUS BADGES --- */
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 4px;
+    display: inline-block;
+    font-weight: bold;
+    font-size: 13px;
+    color: white;
+}
+
+.status-pending-badge {
+    background-color: #e74c3c; /* Red */
+}
+
+.status-in-progress-badge {
+    background-color: #f39c12; /* Orange */
+}
+
+.status-completed-badge {
+    background-color: #27ae60; /* Green */
+}

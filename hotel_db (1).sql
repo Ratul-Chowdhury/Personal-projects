@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 12, 2026 at 08:15 AM
+-- Generation Time: Sep 17, 2026 at 01:31 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -44,24 +44,6 @@ CREATE TABLE `bookings` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `bookings`
---
-
-INSERT INTO `bookings` (`id`, `user_id`, `room_id`, `room_number`, `room_type`, `amount`, `method`, `status`, `guests`, `adults`, `children`, `check_in`, `check_out`, `created_at`) VALUES
-(2, 7, 3, '201', 'Deluxe', 5500, 'Bkash', 'Verified', 1, 1, 0, '2026-09-12', '2026-09-14', '2026-09-09 17:25:07'),
-(3, 9, 3, '201', 'Deluxe', 5500, 'Bkash', 'Verified', 2, 1, 1, '2026-09-18', '2026-09-21', '2026-09-09 18:19:11'),
-(4, 10, 2, '102', 'Standard', 3500, 'Bkash', 'Verified', 2, 1, 1, '2026-09-18', '2026-09-19', '2026-09-09 19:10:19'),
-(5, 11, 1, '101', 'Standard', 3500, 'Bkash', 'Verified', 1, 1, 0, '2026-09-17', '2026-09-22', '2026-09-09 19:12:32'),
-(6, 12, 1, '101', 'Standard', 3500, 'Bkash', 'Verified', 1, 1, 0, '2026-09-12', '2026-09-14', '2026-09-09 19:26:04'),
-(7, 13, 2, '102', 'Standard', 3500, 'Bkash', 'Verified', 1, 1, 0, '2026-09-24', '2026-09-29', '2026-09-09 21:02:52'),
-(8, 14, 3, '201', 'Deluxe', 5500, 'Bkash', 'Verified', 1, 1, 0, '2026-09-24', '2026-09-30', '2026-09-09 21:30:11'),
-(9, 15, 1, '101', 'Standard', 3500, 'Bkash', 'Verified', 1, 1, 0, '2026-09-24', '2026-09-22', '2026-09-09 22:29:54'),
-(10, 14, 3, '201', 'Deluxe', 5500, 'Bkash', 'Verified', 1, 1, 0, '2026-09-12', '2026-09-18', '2026-09-09 23:20:42'),
-(11, 15, 1, '101', 'Standard', 3500, 'Bkash', 'Verified', 1, 1, 0, '2026-09-12', '2026-09-18', '2026-09-09 23:24:31'),
-(12, 12, 4, '202', 'Deluxe', 5500, 'Bkash', 'Verified', 1, 1, 0, '2026-09-18', '2026-09-21', '2026-09-09 23:38:34'),
-(13, 9, 1, '101', 'Standard', 3500, 'Bkash', 'Verified', 1, 1, 0, '2026-09-25', '2026-09-29', '2026-09-10 00:10:06');
-
 -- --------------------------------------------------------
 
 --
@@ -75,8 +57,22 @@ CREATE TABLE `damages` (
   `item` varchar(255) DEFAULT NULL,
   `description` text DEFAULT NULL,
   `status` varchar(20) DEFAULT 'Pending',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `extra_charges` decimal(10,2) DEFAULT NULL,
+  `reason` text DEFAULT NULL,
+  `booking_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `damages`
+--
+
+INSERT INTO `damages` (`id`, `user_id`, `room_number`, `item`, `description`, `status`, `created_at`, `extra_charges`, `reason`, `booking_id`) VALUES
+(1, 6, '301', 'Lamp', '0', 'Resolved', '2026-09-16 19:40:10', 100.00, 'Product Damage - Room 301', 0),
+(3, 6, '101', 'TV Remote', '0', 'Resolved', '2026-09-16 20:26:09', 50.00, 'Product Damage - Room 101', 7),
+(4, 6, '102', 'TV', '0', 'Pending', '2026-09-16 20:42:50', NULL, NULL, 8),
+(5, 6, '999', 'Test Item', '0', 'Pending', '2026-09-16 20:51:44', NULL, NULL, 0),
+(6, 6, '202', 'Fridge', 'The fridge door is broken', 'Resolved', '2026-09-16 21:48:47', 200.00, 'Product Damage - Room 202', 9);
 
 -- --------------------------------------------------------
 
@@ -91,6 +87,15 @@ CREATE TABLE `messages` (
   `text` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `messages`
+--
+
+INSERT INTO `messages` (`id`, `sender_id`, `receiver_id`, `text`, `created_at`) VALUES
+(1, 7, 2, 'The  washing mashine is making too much nois', '2026-09-16 15:02:36'),
+(2, 7, 2, 'Need extra suport handling laundry', '2026-09-16 15:05:02'),
+(3, 7, 6, 'Need help to  keep the dinings clean', '2026-09-16 15:30:31');
 
 -- --------------------------------------------------------
 
@@ -112,14 +117,12 @@ CREATE TABLE `requests` (
 --
 
 INSERT INTO `requests` (`id`, `user_id`, `type`, `text`, `status`, `created_at`) VALUES
-(1, 2, 'transport', 'Airport pickup for Room 301 at 2026-09-19T02:48', 'Pending', '2026-09-03 20:52:11'),
-(2, 2, 'transport', 'Airport pickup for Room 301 at 2026-09-19T02:48', 'Pending', '2026-09-03 20:52:17'),
-(3, 2, 'transport', 'Airport pickup for Room 301 at 2026-09-19T03:11', 'Pending', '2026-09-03 21:11:04'),
-(4, 2, 'wheelchair', 'Wheelchair for Room 301', 'Pending', '2026-09-09 19:27:41'),
-(5, 2, 'wheelchair', 'Wheelchair for Room 301', 'Pending', '2026-09-09 20:38:34'),
-(6, 3, 'food', 'Food (Burger) for Room 301', 'Pending', '2026-09-09 20:40:06'),
-(7, 2, 'transport', '101at 10:00 am', 'Pending', '2026-09-09 22:32:03'),
-(8, 3, 'laundry', '101at 10:00 am', 'Pending', '2026-09-09 22:33:09');
+(2, 6, 'wheelchair', '101at 10:00 am', 'Completed', '2026-09-16 14:50:04'),
+(3, 10, 'special', 'Extra Pillow', 'In Progress', '2026-09-16 14:53:46'),
+(4, 6, 'transport', '101at 10:00 am', 'Pending', '2026-09-16 14:55:13'),
+(5, 7, 'laundry', '101at 10:00 am', 'Pending', '2026-09-16 15:02:59'),
+(6, 7, 'food', '101at 10:00 am Biriyani', 'Pending', '2026-09-16 15:29:30'),
+(7, 6, 'service_instruction', 'Room 101  needs a bit cleaning', 'Pending', '2026-09-16 17:08:47');
 
 -- --------------------------------------------------------
 
@@ -141,12 +144,8 @@ CREATE TABLE `reviews` (
 --
 
 INSERT INTO `reviews` (`id`, `user_id`, `booking_id`, `text`, `rating`, `created_at`) VALUES
-(1, 10, 4, 'It is a nise room', 5, '2026-09-09 19:10:34'),
-(2, 11, 5, 'it is nise room', 5, '2026-09-09 19:13:17'),
-(3, 12, NULL, 'This room is like how i axpected', 5, '2026-09-09 19:26:36'),
-(4, 14, NULL, 'It is a nise room', 5, '2026-09-09 21:30:34'),
-(5, 15, 9, 'This a very comfortable room', 5, '2026-09-09 22:30:43'),
-(6, 9, 13, 'it was a nise room', 5, '2026-09-10 00:17:43');
+(1, 8, 2, 'It is relly a nise room , just like my accepectation', 5, '2026-09-15 23:19:34'),
+(2, 9, 3, 'It is a good room', 4, '2026-09-15 23:21:53');
 
 -- --------------------------------------------------------
 
@@ -171,11 +170,11 @@ CREATE TABLE `rooms` (
 --
 
 INSERT INTO `rooms` (`id`, `number`, `type`, `price`, `guests`, `available`, `amenities`, `description`, `image`) VALUES
-(1, '101', 'Standard', 3500, 2, 5, 'Free WiFi, AC, Flat-screen TV', 'A comfortable standard room with modern amenities.', 'https://images.unsplash.com/photo-1631049307264?w=800'),
-(2, '102', 'Standard', 3500, 2, 3, 'Free WiFi, AC, Flat-screen TV', 'A cozy standard room with all essential amenities.', 'https://images.unsplash.com/photo-1611892440504?w=800'),
-(3, '201', 'Deluxe', 5500, 3, 4, 'Free WiFi, AC, Minibar, City View', 'A spacious deluxe room with premium furnishings.', 'https://images.unsplash.com/photo-1590490360182?w=800'),
-(4, '202', 'Deluxe', 5500, 3, 2, 'Free WiFi, AC, Minibar, City View', 'An elegant deluxe room with luxury amenities.', 'https://images.unsplash.com/photo-1566665797739?w=800'),
-(5, '301', 'Presidential Suite', 12000, 4, 1, 'Free WiFi, AC, Minibar, City View, Jacuzzi', 'Our most luxurious suite.', 'https://images.unsplash.com/photo-1582719478250?w=800');
+(1, '101', 'Standard', 100, 2, 5, 'Wi-Fi, TV, AC, Private Bathroom', 'A comfortable standard room with a queen bed.', 'room-101.jpg'),
+(2, '102', 'Standard', 100, 2, 3, 'Wi-Fi, TV, AC, Private Bathroom', 'A comfortable standard room with two twin beds.', 'room-102.jpg'),
+(3, '201', 'Deluxe', 150, 3, 4, 'Wi-Fi, TV, AC, Mini Bar, Balcony', 'Spacious deluxe room with a king bed and city view.', 'room-201.jpg'),
+(4, '202', 'Deluxe', 150, 3, 2, 'Wi-Fi, TV, AC, Mini Bar, Balcony', 'Spacious deluxe room with a king bed and ocean view.', 'room-202.jpg'),
+(5, '301', 'Presidential Suite', 300, 4, 1, 'Wi-Fi, TV, AC, Mini Bar, Balcony, Jacuzzi, Living Room', 'The ultimate luxury experience with panoramic views.', 'room-301.jpg');
 
 -- --------------------------------------------------------
 
@@ -198,20 +197,11 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `full_name`, `email`, `username`, `password_hash`, `role`, `created_at`) VALUES
-(1, 'Admin', 'admin@hotel.com', 'admin', '$2y$10$H1wc4UENbyA0n5TwMUCyX.XHbEHXftruKL9Z3iP8yFnMeiBTYRQ7C', 'admin', '2026-09-03 15:22:31'),
-(2, 'Receptionist', 'reception@hotel.com', 'receptionist', '$2y$10$itZOfoBiwn/D3fJUb22aB.rQSAy3tMxkqID8sfZnobvT44tokghOK', 'receptionist', '2026-09-03 15:22:31'),
-(3, 'Room Service', 'roomservice@hotel.com', 'roomservice', '$2y$10$itZOfoBiwn/D3fJUb22aB.rQSAy3tMxkqID8sfZnobvT44tokghOK', 'roomservice', '2026-09-03 15:22:31'),
-(5, 'Akash Abdullah', 'akash22@gmail.com', 'Akash Abdullah', '$2y$10$rsUO5ATb4WIL0UqqEkhsQ.RWW0c4bevRYk2YE49735cvUy4d5cYAu', 'customer', '2026-09-03 16:06:10'),
-(6, 'David Smith', 'david@gmail.com', 'David Smith', '$2y$10$AY9owjb9iYrYsuSSWlZd0e2S8RGYh8/5/yLzwKDgytRhhdkVyLnDy', 'customer', '2026-09-03 16:19:46'),
-(7, 'Tauhid Alom', 'tauhid@gmail.com', 'Tauhid', '$2y$10$fjv3h4BbrYB4yL1.fx9XF.dlxxz9wIo9CLYWLJwkIN0uF.uc3NHPu', 'customer', '2026-09-09 15:38:16'),
-(8, 'Kamal Hossain', 'kamal@gmail.com', 'Kamal', '$2y$10$oWCJX9OyuOjtY9cZmhbu/OseYDIHSTkfpqyi0MPThUfmC6QENIpJG', 'customer', '2026-09-09 17:59:46'),
-(9, 'Emon Chowdhury', 'emon@gmai.com', 'Emon', '$2y$10$5BW0a8eRpv4fnVBJZ/Z8EugpqbwdDDn4GW.bG5pQujR36uDithGEK', 'customer', '2026-09-09 18:18:33'),
-(10, 'Ashfaq', 'ashfaq@gmail.com', 'Ashfaq', '$2y$10$Tn3cNB2bPY8w8TJp0Uv3AuoBPy3Ga0KLXlgdlsAIOWWf1A7YI7nne', 'customer', '2026-09-09 19:09:45'),
-(11, 'Latif Hasan', 'latif@gmail.com', 'Latif', '$2y$10$1wz3o9S/690tYyKxktMCe.pmvFj4HFq5iHbqBFqxy8osve92KVt1i', 'customer', '2026-09-09 19:12:04'),
-(12, 'Akbor Ali', 'akbor@gmail.com', 'Akbor', '$2y$10$O1zdhLE6QuqD660j5Kxhve7cMpLLrMiQZYgieeXI2nh1yeR552gCi', 'customer', '2026-09-09 19:25:35'),
-(13, 'Badol Ahmed', 'badol@gmail.com', 'Badol', '$2y$10$Wf6wQikMI4wcgXqsy7PaVuHDOLmL2y/lxEX5m0RJcRbKXTqSkqdvK', 'customer', '2026-09-09 20:55:24'),
-(14, 'Shofik Uddin', 'shofik@gmail.com', 'Shofik', '$2y$10$/0tBdjkvV2g/hPFXSyX49Og912s9rRD5b5cH3HPPyd0/Ji/nE6Jiy', 'customer', '2026-09-09 21:29:46'),
-(15, 'Rahim Uddin', 'rahim@gmail.com', 'Rahim', '$2y$10$kGFX8OFo7XCc5zLbaPAnl.EsVuGV4R316L5dcu9yc2Zq/Q2orn/1u', 'customer', '2026-09-09 22:29:25');
+(5, 'Administrator', 'admin@grandhotel.com', 'admin', '$2y$10$ijrPH8tHATahwRrRZ61fcOv/Gckkla6DR5UP0EStybmpxhnXkrRhS', 'admin', '2026-09-15 23:07:35'),
+(6, 'Front Desk', 'receptionist@grandhotel.com', 'receptionist', '$2y$10$ijrPH8tHATahwRrRZ61fcOv/Gckkla6DR5UP0EStybmpxhnXkrRhS', 'receptionist', '2026-09-15 23:07:35'),
+(7, 'Room Service', 'roomservice@grandhotel.com', 'roomservice', '$2y$10$ijrPH8tHATahwRrRZ61fcOv/Gckkla6DR5UP0EStybmpxhnXkrRhS', 'roomservice', '2026-09-15 23:07:35'),
+(8, 'Lukas Alom', 'lukas@gmail.com', 'Lucas', '$2y$10$uvrFSMn.ZjuN0llqVvu5lOTnMVnI4GbSjpjFouZIXtjLf6Vkz22Zy', 'customer', '2026-09-15 23:18:24'),
+(9, 'Jon Smith', 'jon@gmail.com', 'Jon', '$2y$10$3hkOIzmIgo9i8tUGs2EdfO6ybwt9IPqotGgwfrimbAb2VtLUwAmDq', 'customer', '2026-09-15 23:20:44');
 
 --
 -- Indexes for dumped tables
@@ -271,31 +261,31 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `bookings`
 --
 ALTER TABLE `bookings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `damages`
 --
 ALTER TABLE `damages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `requests`
 --
 ALTER TABLE `requests`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `reviews`
 --
 ALTER TABLE `reviews`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `rooms`
@@ -307,7 +297,7 @@ ALTER TABLE `rooms`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- Constraints for dumped tables

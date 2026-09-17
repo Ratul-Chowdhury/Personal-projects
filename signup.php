@@ -76,16 +76,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $new_id = mysqli_insert_id($conn);
         mysqli_stmt_close($stmt);
 
-        $_SESSION['user_id']       = $new_id;
-        $_SESSION['full_name']     = $full_name;
-        $_SESSION['email']         = $email;
-        $_SESSION['username']      = $username;
-        $_SESSION['role']          = 'customer';
-        $_SESSION['logged_in_at']  = time();
-        $_SESSION['last_activity'] = time();
-
-        $_SESSION['flash'] = 'Account created successfully. Welcome!';
-        header('Location: rooms.php');
+        // UPDATED: Redirect to login page instead of auto-logging in
+        header('Location: login.php?signup=success');
         exit;
     }
 }
