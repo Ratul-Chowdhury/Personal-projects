@@ -313,7 +313,8 @@ try {
                 mysqli_stmt_execute($stmt);
                 $result = mysqli_stmt_get_result($stmt);
             } elseif ($role === 'roomservice') {
-                $stmt = mysqli_prepare($conn, "SELECT r.*, u.username FROM requests r LEFT JOIN users u ON r.user_id = u.id WHERE r.type = 'service_instruction' ORDER BY r.id DESC");
+                // Room service sees instructions from receptionist AND their own supply logs
+                $stmt = mysqli_prepare($conn, "SELECT r.*, u.username FROM requests r LEFT JOIN users u ON r.user_id = u.id WHERE r.type = 'service_instruction' OR r.type = 'supply_log' ORDER BY r.id DESC");
                 mysqli_stmt_execute($stmt);
                 $result = mysqli_stmt_get_result($stmt);
             } else {
@@ -424,7 +425,6 @@ try {
             $response = ['success' => true, 'message' => 'Selected damage reports deleted!'];
             break;
 
-        // --- NEW: Delete Multiple Users ---
         case 'delete_multiple_users':
             if ($role !== 'admin') { 
                 $response['message'] = 'Unauthorized'; 
@@ -435,7 +435,6 @@ try {
                 $deleted_count = 0;
                 foreach ($ids as $id) {
                     $safe_id = (int)$id;
-                    // Prevent deleting yourself
                     if ($safe_id == $user_id) {
                         continue; 
                     }
@@ -451,6 +450,26 @@ try {
             } else {
                 $response = ['success' => false, 'message' => 'No users selected.'];
             }
+            break;
+
+        // --- NEW: Unique Feature for Room Service ---
+        case 'create_supply_log':
+            // STRICT CHECK: Only Room Service can do this
+            if ($role !== 'roomservice') { 
+                $response['message'] = 'Unauthorized. Only Room Service can log supplies.'; 
+                break; 
+            }
+            $room_number = trim($_POST['room_number']);
+            $items = trim($_POST['items']);
+            $text = 'Room ' . $room_number . ' used: ' . $items;
+            
+            // We save this as a special request type so Admin can see it in Services Log
+            $stmt = mysqli_prepare($conn, "INSERT INTO requests (user_id, type, text) VALUES (?, 'supply_log', ?)");
+            mysqli_stmt_bind_param($stmt, 'is', $user_id, $text);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_close($stmt);
+            
+            $response = ['success' => true, 'message' => 'Supply usage logged successfully!'];
             break;
 
         default:

@@ -207,6 +207,17 @@ mysqli_stmt_close($stmt);
                                 <button type="submit">Log Laundry</button>
                             </form>
                         </div>
+                        <!-- NEW: Unique Feature for Room Service -->
+                        <div class="service-card">
+                            <h4>Log Supply Usage</h4>
+                            <form onsubmit="logSupplyUsage(event)">
+                                <label>Room Number</label>
+                                <input type="text" name="room_number" placeholder="Room 101" required>
+                                <label>Items Used (comma separated)</label>
+                                <input type="text" name="items" placeholder="2 Towels, 1 Shampoo" required>
+                                <button type="submit">Log Supplies</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
 
@@ -220,7 +231,7 @@ mysqli_stmt_close($stmt);
                 </div>
 
                 <div id="rs_requests" class="tab-content">
-                    <h3>Service Requests from Receptionist</h3>
+                    <h3>Service Requests & Supply Logs</h3>
                     <div id="requestsTable"></div>
                 </div>
             <?php endif; ?>

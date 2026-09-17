@@ -46,7 +46,6 @@ function loadStats() {
         });
 }
 
-// --- UPDATED: Load All Users with Checkboxes ---
 function loadAllUsers() {
     fetch('../models.php?action=read_all_users')
         .then(function(r) { return r.json(); })
@@ -98,7 +97,7 @@ function deleteSelectedUsers() {
             showFlash(data.message, data.success ? 'success' : 'error');
             if (data.success) {
                 loadAllUsers();
-                loadStats(); // Update total customers count in stats
+                loadStats();
             }
         })
         .catch(function(err) { 
@@ -106,7 +105,6 @@ function deleteSelectedUsers() {
         });
 }
 
-// --- UPDATED: Search Customers with Checkboxes ---
 function searchCustomers() {
     var keyword = document.getElementById('customerSearch').value;
     fetch('../models.php?action=search_customers&keyword=' + encodeURIComponent(keyword))
@@ -572,6 +570,23 @@ function submitRequest(e, type) {
         .then(function(data) {
             showFlash(data.message, data.success ? 'success' : 'error');
             if (data.success) { form.reset(); loadRequests(); }
+        });
+}
+
+// --- NEW: Unique Feature for Room Service ---
+function logSupplyUsage(e) {
+    e.preventDefault();
+    var form = e.target;
+    var formData = new FormData();
+    formData.append('action', 'create_supply_log');
+    formData.append('room_number', form.room_number.value);
+    formData.append('items', form.items.value);
+    
+    fetch('../models.php', { method: 'POST', body: formData })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            showFlash(data.message, data.success ? 'success' : 'error');
+            if (data.success) form.reset();
         });
 }
 
